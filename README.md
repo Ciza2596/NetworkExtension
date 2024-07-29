@@ -7,7 +7,7 @@ NetworkExtension | Test | Samples |
 
 ## MirrorExtension
 ```
-https://github.com/Ciza2596/NetworkExtension.git?path=_Project/NetworkExtension/MirrorExtension
+https://github.com/Ciza2596/NetworkExtension.git?path=Assets/NetworkExtension/MirrorExtension
 ```
 ### Dependency:
 [Mirror](https://github.com/MirrorNetworking/Mirror)
