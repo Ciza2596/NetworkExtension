@@ -1,0 +1,18 @@
+{
+    "name": "MirrorExtension.Editor",
+    "rootNamespace": "CizaMirrorExtension.Editor",
+    "references": [
+        "GUID:523e967041b2a41878e630491a69a98b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
