@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: MirrorNetworkHandlerConfig
   m_EditorClassIdentifier: 
   _rootName: '[Network]'
-  _isDontDestroyOnLoad: 0
-  _networkManagerPrefab: {fileID: 0}
+  _isDontDestroyOnLoad: 1
+  _networkManagerPrefab: {fileID: 3988705367997658453, guid: c0806125a0b444361860db6e46940117, type: 3}
+  _defaultFps: 60
