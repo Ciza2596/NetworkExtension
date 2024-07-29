@@ -8,5 +8,7 @@ namespace CizaMirrorExtension
         bool IsDontDestroyOnLoad { get; }
 
         GameObject NetworkManagerPrefab { get; }
+
+        int DefaultFps { get; }
     }
 }

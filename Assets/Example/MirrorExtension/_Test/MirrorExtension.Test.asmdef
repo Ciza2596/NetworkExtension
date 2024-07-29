@@ -1,0 +1,19 @@
+{
+    "name": "MirrorExtension.Test",
+    "rootNamespace": "",
+    "references": [
+        "Mirror",
+        "MirrorExtension"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
