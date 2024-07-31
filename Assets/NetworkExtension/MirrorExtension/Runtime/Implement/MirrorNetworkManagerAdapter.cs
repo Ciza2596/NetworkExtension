@@ -2,20 +2,14 @@ using System;
 using Mirror;
 using UnityEngine;
 
-namespace CizaMirrorExtension
+namespace CizaMirrorExtension.Implement
 {
     public class MirrorNetworkManagerAdapter : NetworkManager, INetworkManager
     {
         public event Action OnStartServerEvent;
-        public event Action OnStartClientEvent;
-        public event Action OnStartHostEvent;
-
         public event Action OnStopServerEvent;
-        public event Action OnStopClientEvent;
-        public event Action OnStopHostEvent;
 
-        public event Action<int> OnConnect;
-        public event Action<int> OnDisconnect;
+        public event Action<int> OnAddPlayer;
 
 
         public int PlayerCount => numPlayers;
@@ -42,8 +36,14 @@ namespace CizaMirrorExtension
         public void SetMaxPlayerCount(int maxPlayerCount) =>
             maxConnections = maxPlayerCount;
 
-        public void RegisterHandler<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+        public void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
             NetworkServer.RegisterHandler(handler, requireAuthentication);
+
+        public void RegisterHandlerOnClient<T>(Action<T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+            NetworkClient.RegisterHandler(handler, requireAuthentication);
+
+        public void SendMessage<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
+            NetworkClient.Send(message);
 
         public override void OnStartServer()
         {
@@ -51,24 +51,6 @@ namespace CizaMirrorExtension
             OnStartServerEvent?.Invoke();
         }
 
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            OnStartClientEvent?.Invoke();
-        }
-
-        public override void OnStartHost()
-        {
-            base.OnStartHost();
-            OnStartHostEvent?.Invoke();
-        }
-
-        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-        {
-            base.OnServerAddPlayer(conn);
-            conn.identity.transform.SetParent(transform);
-            OnConnect?.Invoke(conn.connectionId);
-        }
 
         public override void OnStopServer()
         {
@@ -76,22 +58,10 @@ namespace CizaMirrorExtension
             OnStopServerEvent?.Invoke();
         }
 
-        public override void OnStopClient()
+        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
-            base.OnStopClient();
-            OnStopClientEvent?.Invoke();
-        }
-
-        public override void OnStopHost()
-        {
-            base.OnStopHost();
-            OnStopHostEvent?.Invoke();
-        }
-
-        public override void OnServerDisconnect(NetworkConnectionToClient conn)
-        {
-            base.OnServerDisconnect(conn);
-            OnDisconnect?.Invoke(conn.connectionId);
+            base.OnServerAddPlayer(conn);
+            OnAddPlayer?.Invoke(conn.connectionId);
         }
     }
 }

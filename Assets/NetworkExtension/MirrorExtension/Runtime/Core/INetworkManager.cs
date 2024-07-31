@@ -7,16 +7,10 @@ namespace CizaMirrorExtension
     public interface INetworkManager
     {
         event Action OnStartServerEvent;
-        event Action OnStartClientEvent;
-        event Action OnStartHostEvent;
-        // PlayerIndex
-        event Action<int> OnConnect;
 
         event Action OnStopServerEvent;
-        event Action OnStopClientEvent;
-        event Action OnStopHostEvent;
-        // PlayerIndex
-        event Action<int> OnDisconnect;
+
+        event Action<int> OnAddPlayer;
 
         int PlayerCount { get; }
 
@@ -43,6 +37,9 @@ namespace CizaMirrorExtension
         void StopClient();
         void StopHost();
 
-        void RegisterHandler<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage;
+        void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage;
+        void RegisterHandlerOnClient<T>(Action<T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage;
+        
+        void SendMessage<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
     }
 }

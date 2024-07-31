@@ -7,18 +7,24 @@ namespace CizaMirrorExtension
 {
     public class MirrorNetworkHandler
     {
+        public readonly float DelayStopHostTime = 0.1f;
+
         private readonly IMirrorNetworkHandlerConfig _mirrorNetworkHandlerConfig;
 
         private Transform _root;
         private INetworkManager _networkManager;
 
+        private int _playerCount;
+
+        private float _time;
+
+        public event Action OnServerRegisterHandler;
         public event Action OnStartServer;
-        public event Action OnStartClient;
-        public event Action OnStartHost;
 
         public event Action OnStopServer;
-        public event Action OnStopClient;
-        public event Action OnStopHost;
+
+        // PlayerIndex
+        public event Action<int> OnPlayerRegisterHandler;
 
         // PlayerIndex
         public event Action<int> OnConnect;
@@ -34,9 +40,11 @@ namespace CizaMirrorExtension
 
         public int MaxPlayerCount { get; private set; }
 
-        public int PlayerCount => IsInitialized ? _networkManager.PlayerCount : 0;
+        public int PlayerCount => IsInitialized && !Mode.CheckIsOffline() ? _playerCount : 0;
 
         public NetworkManagerMode Mode => IsInitialized ? _networkManager.Mode : NetworkManagerMode.Offline;
+
+        public bool IsStoppingHost { get; private set; }
 
         public bool TryGetPlayer(int playerIndex, out NetworkConnectionToClient networkConnectionToClient)
         {
@@ -73,14 +81,8 @@ namespace CizaMirrorExtension
             SetMaxPlayerCount(_mirrorNetworkHandlerConfig.DefaultMaxPlayerCount);
 
             _networkManager.OnStartServerEvent += OnStartServerImp;
-            _networkManager.OnStartClientEvent += OnStartClientImp;
-            _networkManager.OnStartHostEvent += OnStartHostImp;
-            _networkManager.OnConnect += OnConnectImp;
-
             _networkManager.OnStopServerEvent += OnStopServerImp;
-            _networkManager.OnStopClientEvent += OnStopClientImp;
-            _networkManager.OnStopHostEvent += OnStopHostImp;
-            _networkManager.OnDisconnect += OnDisconnectImp;
+            _networkManager.OnAddPlayer += OnAddPlayerImp;
         }
 
         public void Release()
@@ -94,6 +96,22 @@ namespace CizaMirrorExtension
             var root = _root;
             _root = null;
             Object.DestroyImmediate(root.gameObject);
+        }
+
+        public void Tick(float deltaTime)
+        {
+            if (!IsInitialized)
+                return;
+
+            if (IsStoppingHost)
+            {
+                _time -= deltaTime;
+                if (_time < 0)
+                {
+                    IsStoppingHost = false;
+                    _networkManager.StopHost();
+                }
+            }
         }
 
         public void SetFps(int fps)
@@ -168,46 +186,87 @@ namespace CizaMirrorExtension
             if (!IsInitialized)
                 return;
 
-            _networkManager.StopClient();
+            SendDisconnectMessage();
         }
 
         public void StopHost()
         {
-            if (!IsInitialized)
+            if (!IsInitialized || IsStoppingHost)
                 return;
 
-            _networkManager.StopHost();
+            _time = DelayStopHostTime;
+            IsStoppingHost = true;
+            SendDisconnectMessage();
         }
 
-        public void RegisterHandler<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
-            _networkManager.RegisterHandler(handler, requireAuthentication);
+        public void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+            _networkManager.RegisterHandlerOnServer(handler, requireAuthentication);
+
+        public void RegisterHandlerOnClient<T>(Action<T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+            _networkManager.RegisterHandlerOnClient(handler, requireAuthentication);
 
         public void SendMessage<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
-            NetworkClient.Send(message);
+            _networkManager.SendMessage(message);
 
 
-        private void OnStartServerImp() =>
+        private void OnStartServerImp()
+        {
+            OnServerRegisterHandler?.Invoke();
+            RegisterHandlerOnServer<ConnectMessage>(OnReceiveConnectMessageOnServer);
+            RegisterHandlerOnServer<DisconnectMessage>(OnReceiveDisconnectMessageOnServer);
             OnStartServer?.Invoke();
+        }
 
-        private void OnStartClientImp() =>
-            OnStartClient?.Invoke();
-
-        private void OnStartHostImp() =>
-            OnStartHost?.Invoke();
 
         private void OnStopServerImp() =>
             OnStopServer?.Invoke();
 
-        private void OnStopClientImp() =>
-            OnStopClient?.Invoke();
+        private void OnAddPlayerImp(int playerIndex)
+        {
+            if (!_networkManager.TryGetPlayer(playerIndex, out var networkConnectionToClient) || !networkConnectionToClient.identity.TryGetComponent<IMirrorNetworkPlayer>(out var mirrorNetworkPlayer))
+                return;
 
-        private void OnStopHostImp() =>
-            OnStopHost?.Invoke();
+            mirrorNetworkPlayer.SetPlayerIndex(playerIndex);
+            mirrorNetworkPlayer.OnStartClientEvent += OnPlayerStartClientEventImp;
+        }
 
-        private void OnConnectImp(int playerIndex) =>
-            OnConnect?.Invoke(playerIndex);
+        private void SendConnectMessage() =>
+            SendMessage(new ConnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount));
 
-        private void OnDisconnectImp(int playerIndex) =>
-            OnDisconnect?.Invoke(playerIndex);
+        private void SendDisconnectMessage() =>
+            SendMessage(new DisconnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount, Mode.CheckIsHost()));
+
+        private void OnPlayerStartClientEventImp(int playerIndex)
+        {
+            OnPlayerRegisterHandler?.Invoke(playerIndex);
+
+            RegisterHandlerOnClient<ConnectMessage>(OnReceiveConnectMessageOnClient);
+            RegisterHandlerOnClient<DisconnectMessage>(OnReceiveDisconnectMessageOnClient);
+            SendConnectMessage();
+        }
+
+        private void OnReceiveConnectMessageOnServer(NetworkConnectionToClient networkConnectionToClient, ConnectMessage connectMessage) =>
+            MirrorNetworkUtils.SendMessageToAll(connectMessage);
+
+
+        private void OnReceiveDisconnectMessageOnServer(NetworkConnectionToClient networkConnectionToClient, DisconnectMessage disconnectMessage) =>
+            MirrorNetworkUtils.SendMessageToAll(new[] { networkConnectionToClient.connectionId }, disconnectMessage);
+
+        private void OnReceiveConnectMessageOnClient(ConnectMessage connectMessage)
+        {
+            _playerCount = connectMessage.PlayerCount;
+            OnConnect?.Invoke(connectMessage.PlayerIndex);
+        }
+
+        private void OnReceiveDisconnectMessageOnClient(DisconnectMessage disconnectMessage)
+        {
+            _playerCount = disconnectMessage.PlayerCount;
+
+            if (NetworkClient.connection.connectionId == disconnectMessage.PlayerIndex || disconnectMessage.IsHost)
+            {
+                OnDisconnect?.Invoke(disconnectMessage.PlayerIndex);
+                _networkManager.StopClient();
+            }
+        }
     }
 }

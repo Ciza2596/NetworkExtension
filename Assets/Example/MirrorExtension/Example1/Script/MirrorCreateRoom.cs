@@ -1,3 +1,4 @@
+using CizaMirrorExtension.Implement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,6 +70,7 @@ namespace CizaMirrorExtension.Example
                 return;
 
             _playerCountText.text = MirrorNetworkHandler.PlayerCount.ToString();
+            MirrorNetworkHandler.Tick(Time.deltaTime);
         }
 
         private void OnHostButtonClick()
