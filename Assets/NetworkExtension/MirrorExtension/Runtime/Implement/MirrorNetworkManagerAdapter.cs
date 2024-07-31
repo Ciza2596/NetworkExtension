@@ -12,6 +12,8 @@ namespace CizaMirrorExtension.Implement
         public event Action OnStartClientEvent;
         public event Action OnStopClientEvent;
 
+        public event Action OnServerAddPlayerEvent;
+
 
         public int PlayerCount => numPlayers;
         public NetworkManagerMode Mode => mode;
@@ -69,6 +71,12 @@ namespace CizaMirrorExtension.Implement
         {
             base.OnStopClient();
             OnStopClientEvent?.Invoke();
+        }
+
+        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+        {
+            base.OnServerAddPlayer(conn);
+            OnServerAddPlayerEvent?.Invoke();
         }
     }
 }

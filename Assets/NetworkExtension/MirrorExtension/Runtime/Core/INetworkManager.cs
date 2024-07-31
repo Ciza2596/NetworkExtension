@@ -14,6 +14,8 @@ namespace CizaMirrorExtension
 
         event Action OnStopClientEvent;
 
+        event Action OnServerAddPlayerEvent;
+
         int PlayerCount { get; }
 
         NetworkManagerMode Mode { get; }

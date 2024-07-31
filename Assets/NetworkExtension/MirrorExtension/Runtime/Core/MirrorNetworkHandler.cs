@@ -87,6 +87,8 @@ namespace CizaMirrorExtension
 
             _networkManager.OnStartClientEvent += OnStartClientImp;
             _networkManager.OnStopClientEvent += OnStopClientImp;
+
+            _networkManager.OnServerAddPlayerEvent += OnServerAddPlayerEventImp;
         }
 
         public void Release()
@@ -220,13 +222,16 @@ namespace CizaMirrorExtension
             OnClientRegisterHandler?.Invoke();
             RegisterHandlerOnClient<ConnectMessage>(OnReceiveConnectMessageOnClient);
             RegisterHandlerOnClient<DisconnectMessage>(OnReceiveDisconnectMessageOnClient);
-            SendConnectMessage();
             OnStartClient?.Invoke();
         }
 
 
         private void OnStopClientImp() =>
             OnStopClient?.Invoke();
+
+        private void OnServerAddPlayerEventImp() =>
+            SendConnectMessage();
+
 
         private void SendConnectMessage() =>
             SendMessage(new ConnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount));
