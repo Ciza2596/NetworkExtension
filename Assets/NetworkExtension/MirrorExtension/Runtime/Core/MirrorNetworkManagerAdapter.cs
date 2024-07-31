@@ -66,6 +66,7 @@ namespace CizaMirrorExtension
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
             base.OnServerAddPlayer(conn);
+            conn.identity.transform.SetParent(transform);
             OnConnect?.Invoke(conn.connectionId);
         }
 
