@@ -5,12 +5,12 @@ namespace CizaMirrorExtension
 {
     public struct DisconnectMessage : NetworkMessage
     {
-        public readonly int PlayerId;
+        public readonly uint PlayerId;
         public readonly int PlayerCount;
         public readonly bool IsHost;
 
         [Preserve]
-        public DisconnectMessage(int playerId, int playerCount, bool isHost)
+        public DisconnectMessage(uint playerId, int playerCount, bool isHost)
         {
             PlayerId = playerId;
             PlayerCount = playerCount;

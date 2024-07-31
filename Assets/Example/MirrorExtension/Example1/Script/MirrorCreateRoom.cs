@@ -88,13 +88,13 @@ namespace CizaMirrorExtension.Example
             MirrorNetworkHandler.StopHost();
         }
 
-        private void OnConnected(int playerIndex)
+        private void OnConnected(uint playerId)
         {
             _start.SetActive(false);
             _stop.SetActive(true);
         }
 
-        private void OnDisconnected(int playerIndex)
+        private void OnDisconnected(uint playerId)
         {
             _start.SetActive(true);
             _stop.SetActive(false);

@@ -7,12 +7,12 @@ namespace CizaMirrorExtension
     public static class MirrorNetworkUtils
     {
         public static void SendMessageToAll<T>(T message) where T : struct, NetworkMessage =>
-            SendMessageToAll(Array.Empty<int>(), message);
+            SendMessageToAll(Array.Empty<uint>(), message);
 
-        public static void SendMessageToAll<T>(int[] exceptPlayerIndexList, T message) where T : struct, NetworkMessage
+        public static void SendMessageToAll<T>(uint[] exceptPlayerIdList, T message) where T : struct, NetworkMessage
         {
             foreach (var connection in NetworkServer.connections.Values)
-                if (!exceptPlayerIndexList.Contains(connection.connectionId))
+                if (!exceptPlayerIdList.Contains(connection.identity.netId))
                     connection.Send(message);
         }
     }
