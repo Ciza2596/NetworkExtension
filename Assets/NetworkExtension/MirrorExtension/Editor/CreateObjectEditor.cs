@@ -15,6 +15,14 @@ namespace CizaMirrorExtension.Editor
             CreateObject(MirrorNetworkManager);
         }
 
+        public const string MirrorNetworkPlayer = "MirrorNetworkPlayer";
+
+        [MenuItem("GameObject/Ciza/Network/MirrorNetworkPlayer", false, -10)]
+        public static void CreateMirrorNetworkPlayer()
+        {
+            CreateObject(MirrorNetworkPlayer);
+        }
+
         private static void CreateObject(string dataId)
         {
             var prefab = Resources.Load<GameObject>(MirrorExtensionPath + dataId);

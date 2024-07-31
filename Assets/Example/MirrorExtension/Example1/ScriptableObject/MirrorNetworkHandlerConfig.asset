@@ -15,4 +15,7 @@ MonoBehaviour:
   _rootName: '[Network]'
   _isDontDestroyOnLoad: 1
   _networkManagerPrefab: {fileID: 3988705367997658453, guid: c0806125a0b444361860db6e46940117, type: 3}
+  _networkPlayerPrefab: {fileID: 2040001823770566943, guid: 24aa9e66650854397ae7a18485b36c42, type: 3}
   _defaultFps: 60
+  _defaultNetworkAddress: localhost
+  _defaultMaxPlayerCount: 4
