@@ -184,7 +184,7 @@ namespace CizaMirrorExtension
             if (!IsInitialized)
                 return;
 
-            SendDisconnectMessage();
+            SendDisconnectMessage(false);
         }
 
         public void StopHost()
@@ -192,7 +192,7 @@ namespace CizaMirrorExtension
             if (!IsInitialized || IsStoppingClient)
                 return;
 
-            SendDisconnectMessage();
+            SendDisconnectMessage(true);
         }
 
         public void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
@@ -236,8 +236,8 @@ namespace CizaMirrorExtension
         private void SendConnectMessage() =>
             SendMessage(new ConnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount));
 
-        private void SendDisconnectMessage() =>
-            SendMessage(new DisconnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount, Mode.CheckIsHost()));
+        private void SendDisconnectMessage(bool isHost) =>
+            SendMessage(new DisconnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount, isHost && Mode.CheckIsHost()));
 
 
         private void OnReceiveConnectMessageOnServer(NetworkConnectionToClient networkConnectionToClient, ConnectMessage connectMessage) =>
