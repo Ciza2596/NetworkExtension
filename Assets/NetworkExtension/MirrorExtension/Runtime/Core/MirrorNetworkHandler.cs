@@ -28,10 +28,10 @@ namespace CizaMirrorExtension
         public event Action OnStartClient;
         public event Action OnStopClient;
 
-        // PlayerIndex
+        // PlayerId
         public event Action<int> OnConnect;
 
-        // PlayerIndex
+        // PlayerId
         public event Action<int> OnDisconnect;
 
         public bool IsInitialized => _networkManager != null;
@@ -245,16 +245,16 @@ namespace CizaMirrorExtension
         private void OnReceiveConnectMessageOnClient(ConnectMessage connectMessage)
         {
             _playerCount = connectMessage.PlayerCount;
-            OnConnect?.Invoke(connectMessage.PlayerIndex);
+            OnConnect?.Invoke(connectMessage.PlayerId);
         }
 
         private void OnReceiveDisconnectMessageOnClient(DisconnectMessage disconnectMessage)
         {
             _playerCount = disconnectMessage.PlayerCount;
 
-            if (!IsStoppingClient && (NetworkClient.connection.connectionId == disconnectMessage.PlayerIndex || disconnectMessage.IsHost))
+            if (!IsStoppingClient && (NetworkClient.connection.connectionId == disconnectMessage.PlayerId || disconnectMessage.IsHost))
             {
-                OnDisconnect?.Invoke(disconnectMessage.PlayerIndex);
+                OnDisconnect?.Invoke(disconnectMessage.PlayerId);
                 EnableStoppingHost(disconnectMessage.IsHost);
             }
         }

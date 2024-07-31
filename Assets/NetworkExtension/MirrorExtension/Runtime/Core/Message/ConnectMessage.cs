@@ -5,13 +5,13 @@ namespace CizaMirrorExtension
 {
     public struct ConnectMessage : NetworkMessage
     {
-        public readonly int PlayerIndex;
+        public readonly int PlayerId;
         public readonly int PlayerCount;
 
         [Preserve]
-        public ConnectMessage(int playerIndex, int playerCount)
+        public ConnectMessage(int playerId, int playerCount)
         {
-            PlayerIndex = playerIndex;
+            PlayerId = playerId;
             PlayerCount = playerCount;
         }
     }
