@@ -9,8 +9,10 @@ namespace CizaMirrorExtension
         event Action OnStartServerEvent;
 
         event Action OnStopServerEvent;
+        
+        event Action OnStartClientEvent;
 
-        event Action<int> OnAddPlayer;
+        event Action OnStopClientEvent;
 
         int PlayerCount { get; }
 
