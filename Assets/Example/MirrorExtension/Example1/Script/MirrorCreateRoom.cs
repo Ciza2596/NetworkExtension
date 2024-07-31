@@ -64,7 +64,7 @@ namespace CizaMirrorExtension.Example
             MirrorNetworkHandler = null;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (MirrorNetworkHandler == null)
                 return;

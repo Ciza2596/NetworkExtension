@@ -7,7 +7,7 @@ namespace CizaMirrorExtension
 {
     public class MirrorNetworkHandler
     {
-        public readonly float DelayStopHostTime = 0.1f;
+        public readonly float DelayStopHostTime = 0.05f;
 
         private readonly IMirrorNetworkHandlerConfig _mirrorNetworkHandlerConfig;
 
@@ -16,7 +16,8 @@ namespace CizaMirrorExtension
 
         private int _playerCount;
 
-        private float _time;
+        private float _stoppingClientTime;
+        private bool _isStoppingHost;
 
         public event Action OnServerRegisterHandler;
         public event Action OnStartServer;
@@ -44,7 +45,7 @@ namespace CizaMirrorExtension
 
         public NetworkManagerMode Mode => IsInitialized ? _networkManager.Mode : NetworkManagerMode.Offline;
 
-        public bool IsStoppingHost { get; private set; }
+        public bool IsStoppingClient { get; private set; }
 
         public bool TryGetPlayer(int playerIndex, out NetworkConnectionToClient networkConnectionToClient)
         {
@@ -103,15 +104,7 @@ namespace CizaMirrorExtension
             if (!IsInitialized)
                 return;
 
-            if (IsStoppingHost)
-            {
-                _time -= deltaTime;
-                if (_time < 0)
-                {
-                    IsStoppingHost = false;
-                    _networkManager.StopHost();
-                }
-            }
+            CheckStoppingClient(deltaTime);
         }
 
         public void SetFps(int fps)
@@ -191,11 +184,9 @@ namespace CizaMirrorExtension
 
         public void StopHost()
         {
-            if (!IsInitialized || IsStoppingHost)
+            if (!IsInitialized || IsStoppingClient)
                 return;
 
-            _time = DelayStopHostTime;
-            IsStoppingHost = true;
             SendDisconnectMessage();
         }
 
@@ -250,7 +241,7 @@ namespace CizaMirrorExtension
 
 
         private void OnReceiveDisconnectMessageOnServer(NetworkConnectionToClient networkConnectionToClient, DisconnectMessage disconnectMessage) =>
-            MirrorNetworkUtils.SendMessageToAll(new[] { networkConnectionToClient.connectionId }, disconnectMessage);
+            MirrorNetworkUtils.SendMessageToAll(disconnectMessage);
 
         private void OnReceiveConnectMessageOnClient(ConnectMessage connectMessage)
         {
@@ -262,10 +253,41 @@ namespace CizaMirrorExtension
         {
             _playerCount = disconnectMessage.PlayerCount;
 
-            if (NetworkClient.connection.connectionId == disconnectMessage.PlayerIndex || disconnectMessage.IsHost)
+            if (!IsStoppingClient && (NetworkClient.connection.connectionId == disconnectMessage.PlayerIndex || disconnectMessage.IsHost))
             {
                 OnDisconnect?.Invoke(disconnectMessage.PlayerIndex);
-                _networkManager.StopClient();
+                EnableStoppingHost(disconnectMessage.IsHost);
+            }
+        }
+
+        private void EnableStoppingHost(bool isStoppingHost)
+        {
+            _stoppingClientTime = DelayStopHostTime;
+            IsStoppingClient = true;
+            _isStoppingHost = isStoppingHost;
+        }
+
+        private void DisableStoppingHost()
+        {
+            _stoppingClientTime = 0;
+            _isStoppingHost = false;
+            IsStoppingClient = false;
+        }
+
+        private void CheckStoppingClient(float deltaTime)
+        {
+            if (!IsStoppingClient)
+                return;
+
+            _stoppingClientTime -= deltaTime;
+            if (_stoppingClientTime < 0)
+            {
+                if (_isStoppingHost)
+                    _networkManager.StopHost();
+                else
+                    _networkManager.StopClient();
+
+                DisableStoppingHost();
             }
         }
     }
