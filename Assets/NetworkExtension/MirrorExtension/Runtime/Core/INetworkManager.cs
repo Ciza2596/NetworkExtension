@@ -20,7 +20,7 @@ namespace CizaMirrorExtension
 
         NetworkManagerMode Mode { get; }
 
-        bool TryGetPlayer(int playerIndex, out NetworkConnectionToClient networkConnectionToClient);
+        bool TryGetPlayer(int playerId, out NetworkConnectionToClient networkConnectionToClient);
 
         void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad);
         void SetPlayerPrefab(GameObject playerPrefab);

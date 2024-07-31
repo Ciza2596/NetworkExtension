@@ -48,7 +48,7 @@ namespace CizaMirrorExtension
 
         public bool IsStoppingClient { get; private set; }
 
-        public bool TryGetPlayer(int playerIndex, out NetworkConnectionToClient networkConnectionToClient)
+        public bool TryGetPlayer(int playerId, out NetworkConnectionToClient networkConnectionToClient)
         {
             if (!IsInitialized)
             {
@@ -56,7 +56,7 @@ namespace CizaMirrorExtension
                 return false;
             }
 
-            return _networkManager.TryGetPlayer(playerIndex, out networkConnectionToClient);
+            return _networkManager.TryGetPlayer(playerId, out networkConnectionToClient);
         }
 
 

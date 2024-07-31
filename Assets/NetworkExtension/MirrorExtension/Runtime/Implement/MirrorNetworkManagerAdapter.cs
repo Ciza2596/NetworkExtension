@@ -18,8 +18,8 @@ namespace CizaMirrorExtension.Implement
         public int PlayerCount => numPlayers;
         public NetworkManagerMode Mode => mode;
 
-        public bool TryGetPlayer(int playerIndex, out NetworkConnectionToClient networkConnectionToClient) =>
-            NetworkServer.connections.TryGetValue(playerIndex, out networkConnectionToClient);
+        public bool TryGetPlayer(int playerId, out NetworkConnectionToClient networkConnectionToClient) =>
+            NetworkServer.connections.TryGetValue(playerId, out networkConnectionToClient);
 
         public void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad) =>
             dontDestroyOnLoad = isDontDestroyOnLoad;
