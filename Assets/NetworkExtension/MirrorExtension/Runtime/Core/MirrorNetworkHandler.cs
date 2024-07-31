@@ -237,7 +237,7 @@ namespace CizaMirrorExtension
             SendMessage(new ConnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount));
 
         private void SendDisconnectMessage(bool isHost) =>
-            SendMessage(new DisconnectMessage(NetworkClient.connection.connectionId, _networkManager.PlayerCount, isHost && Mode.CheckIsHost()));
+            SendMessage(new DisconnectMessage(NetworkClient.connection.connectionId, PlayerCount - 1, isHost && Mode.CheckIsHost()));
 
 
         private void OnReceiveConnectMessageOnServer(NetworkConnectionToClient networkConnectionToClient, ConnectMessage connectMessage) =>
