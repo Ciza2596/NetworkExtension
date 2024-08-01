@@ -9,7 +9,7 @@ namespace CizaMirrorExtension
         event Action OnStartServerEvent;
 
         event Action OnStopServerEvent;
-        
+
         event Action OnStartClientEvent;
 
         event Action OnStopClientEvent;
@@ -20,7 +20,7 @@ namespace CizaMirrorExtension
 
         NetworkManagerMode Mode { get; }
 
-        bool TryGetPlayer(int playerId, out NetworkConnectionToClient networkConnectionToClient);
+        bool TryGetPlayerWhenServer(int playerId, out NetworkIdentity networkIdentity);
 
         void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad);
         void SetPlayerPrefab(GameObject playerPrefab);
@@ -43,7 +43,7 @@ namespace CizaMirrorExtension
 
         void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage;
         void RegisterHandlerOnClient<T>(Action<T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage;
-        
+
         void SendMessage<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
     }
 }

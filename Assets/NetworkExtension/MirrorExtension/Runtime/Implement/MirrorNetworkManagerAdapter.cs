@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -18,8 +19,12 @@ namespace CizaMirrorExtension.Implement
         public int PlayerCount => numPlayers;
         public NetworkManagerMode Mode => mode;
 
-        public bool TryGetPlayer(int playerId, out NetworkConnectionToClient networkConnectionToClient) =>
-            NetworkServer.connections.TryGetValue(playerId, out networkConnectionToClient);
+        public bool TryGetPlayerWhenServer(int playerId, out NetworkIdentity networkIdentity)
+        {
+            var networkConnectionToClient = NetworkServer.connections.First(connection => connection.Value.identity != null && connection.Value.identity.netId == playerId).Value;
+            networkIdentity = networkConnectionToClient.identity;
+            return networkIdentity != null;
+        }
 
         public void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad) =>
             dontDestroyOnLoad = isDontDestroyOnLoad;
