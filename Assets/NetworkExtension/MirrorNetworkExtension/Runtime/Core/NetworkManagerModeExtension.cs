@@ -1,6 +1,6 @@
 using Mirror;
 
-namespace CizaMirrorExtension
+namespace CizaMirrorNetworkExtension
 {
     public static class NetworkManagerModeExtension
     {

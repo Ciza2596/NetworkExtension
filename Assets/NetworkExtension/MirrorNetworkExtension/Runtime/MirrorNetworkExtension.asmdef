@@ -1,6 +1,6 @@
 {
-    "name": "MirrorExtension",
-    "rootNamespace": "CizaMirrorExtension",
+    "name": "MirrorNetworkExtension",
+    "rootNamespace": "CizaMirrorNetworkExtension",
     "references": [
         "Mirror"
     ],

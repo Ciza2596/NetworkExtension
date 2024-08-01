@@ -3,11 +3,11 @@ NetworkExtension for unity.
 
 NetworkExtension | Test | Samples |
 --- | :---: | :---: |
-[MirrorExtension](#mirrorextension) | ❌ | ❌ |
+[MirrorNetworkExtension](#mirrornetworkextension) | ❌ | ❌ |
 
-## MirrorExtension
+## MirrorNetworkExtension
 ```
-https://github.com/Ciza2596/NetworkExtension.git?path=Assets/NetworkExtension/MirrorExtension
+https://github.com/Ciza2596/NetworkExtension.git?path=Assets/NetworkExtension/MirrorNetworkExtension
 ```
 ### Dependency:
 [Mirror](https://github.com/MirrorNetworking/Mirror)

@@ -2,7 +2,7 @@ using System;
 using Mirror;
 using UnityEngine;
 
-namespace CizaMirrorExtension
+namespace CizaMirrorNetworkExtension
 {
     public interface INetworkManager
     {

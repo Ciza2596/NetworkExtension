@@ -1,9 +1,9 @@
-using CizaMirrorExtension.Implement;
+using CizaMirrorNetworkExtension.Implement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CizaMirrorExtension.Example
+namespace CizaMirrorNetworkExtension.Example
 {
     public class MirrorCreateRoom : MonoBehaviour
     {

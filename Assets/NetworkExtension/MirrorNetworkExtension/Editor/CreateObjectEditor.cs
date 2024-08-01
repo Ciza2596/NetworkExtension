@@ -1,11 +1,11 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace CizaMirrorExtension.Editor
+namespace CizaMirrorNetworkExtension.Editor
 {
     public static class CreateObjectEditor
     {
-        public const string MirrorExtensionPath = "MirrorExtension/";
+        public const string MirrorExtensionPath = "MirrorNetworkExtension/";
 
         public const string MirrorNetworkManager = "MirrorNetworkManager";
 

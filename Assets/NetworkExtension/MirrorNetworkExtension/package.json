@@ -1,7 +1,7 @@
 {
-  "name": "com.ciza.mirrorextension",
-  "displayName": "MirrorExtension",
-  "description": "MirrorExtension.",
+  "name": "com.ciza.mirrornetworkextension",
+  "displayName": "MirrorNetworkExtension",
+  "description": "MirrorNetworkExtension.",
   "version": "0.0.1",
   "unity": "2022.2",
   "unityRelease": "1f1",

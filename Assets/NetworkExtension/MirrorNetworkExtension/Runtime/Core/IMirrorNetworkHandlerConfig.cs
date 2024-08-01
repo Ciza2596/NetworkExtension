@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CizaMirrorExtension
+namespace CizaMirrorNetworkExtension
 {
     public interface IMirrorNetworkHandlerConfig
     {

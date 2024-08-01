@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine.Scripting;
 
-namespace CizaMirrorExtension
+namespace CizaMirrorNetworkExtension
 {
     public struct ConnectMessage : NetworkMessage
     {

@@ -1,7 +1,7 @@
-using CizaMirrorExtension.Implement;
+using CizaMirrorNetworkExtension.Implement;
 using UnityEngine;
 
-namespace CizaMirrorExtension.Example
+namespace CizaMirrorNetworkExtension.Example
 {
     public class MirrorNetworkMonoHandler : MonoBehaviour
     {

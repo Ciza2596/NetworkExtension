@@ -3,7 +3,7 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 
-namespace CizaMirrorExtension.Implement
+namespace CizaMirrorNetworkExtension.Implement
 {
     public class MirrorNetworkManagerAdapter : NetworkManager, INetworkManager
     {

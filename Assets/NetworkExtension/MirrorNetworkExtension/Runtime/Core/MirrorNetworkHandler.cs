@@ -3,7 +3,7 @@ using Mirror;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace CizaMirrorExtension
+namespace CizaMirrorNetworkExtension
 {
     public class MirrorNetworkHandler
     {

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Mirror;
 
-namespace CizaMirrorExtension
+namespace CizaMirrorNetworkExtension
 {
     public static class MirrorNetworkUtils
     {

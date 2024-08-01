@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
 
-namespace CizaMirrorExtension.Example
+namespace CizaMirrorNetworkExtension.Example
 {
     public class PlayerCountHandler : MonoBehaviour
     {

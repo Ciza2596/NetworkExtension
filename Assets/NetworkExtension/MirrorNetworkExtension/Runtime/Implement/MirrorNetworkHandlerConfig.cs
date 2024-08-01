@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CizaMirrorExtension.Implement
+namespace CizaMirrorNetworkExtension.Implement
 {
     [CreateAssetMenu(fileName = "MirrorNetworkHandlerConfig", menuName = "Ciza/Network/MirrorNetworkHandlerConfig", order = 0)]
     public class MirrorNetworkHandlerConfig : ScriptableObject, IMirrorNetworkHandlerConfig
