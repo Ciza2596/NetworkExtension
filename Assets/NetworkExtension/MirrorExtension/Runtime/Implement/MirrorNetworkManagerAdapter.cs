@@ -19,8 +19,14 @@ namespace CizaMirrorExtension.Implement
         public int PlayerCount => numPlayers;
         public NetworkManagerMode Mode => mode;
 
-        public bool TryGetPlayerWhenServer(int playerId, out NetworkIdentity networkIdentity)
+        public bool TryGetPlayer(int playerId, out NetworkIdentity networkIdentity)
         {
+            if (Mode.CheckIsOffline() || Mode.CheckIsClientOnly())
+            {
+                networkIdentity = null;
+                return false;
+            }
+
             var networkConnectionToClient = NetworkServer.connections.First(connection => connection.Value.identity != null && connection.Value.identity.netId == playerId).Value;
             networkIdentity = networkConnectionToClient.identity;
             return networkIdentity != null;
