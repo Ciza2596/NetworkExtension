@@ -41,9 +41,10 @@ namespace CizaMirrorNetworkExtension
         void StopClient();
         void StopHost();
 
-        void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage;
-        void RegisterHandlerOnClient<T>(Action<T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage;
+        void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
+        void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
 
-        void SendMessage<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
+        void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage;
+        void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage;
     }
 }

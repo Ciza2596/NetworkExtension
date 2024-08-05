@@ -195,14 +195,17 @@ namespace CizaMirrorNetworkExtension
             SendDisconnectMessage(true);
         }
 
-        public void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+        public void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
+            _networkManager.SendMessageToServer(message);
+
+        public void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
+            _networkManager.SendMessageToAllClient(message);
+
+        public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnServer(handler, requireAuthentication);
 
-        public void RegisterHandlerOnClient<T>(Action<T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+        public void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnClient(handler, requireAuthentication);
-
-        public void SendMessage<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
-            _networkManager.SendMessage(message);
 
 
         private void OnStartServerImp()
@@ -234,18 +237,18 @@ namespace CizaMirrorNetworkExtension
 
 
         private void SendConnectMessage() =>
-            SendMessage(new ConnectMessage(NetworkClient.connection.identity.netId, _networkManager.PlayerCount));
+            SendMessageToServer(new ConnectMessage(NetworkClient.connection.identity.netId, _networkManager.PlayerCount));
 
         private void SendDisconnectMessage(bool isHost) =>
-            SendMessage(new DisconnectMessage(NetworkClient.connection.identity.netId, PlayerCount - 1, isHost && Mode.CheckIsHost()));
+            SendMessageToServer(new DisconnectMessage(NetworkClient.connection.identity.netId, PlayerCount - 1, isHost && Mode.CheckIsHost()));
 
 
         private void OnReceiveConnectMessageOnServer(NetworkConnectionToClient networkConnectionToClient, ConnectMessage connectMessage) =>
-            MirrorNetworkUtils.SendMessageToAll(connectMessage);
+            SendMessageToAllClient(connectMessage);
 
 
         private void OnReceiveDisconnectMessageOnServer(NetworkConnectionToClient networkConnectionToClient, DisconnectMessage disconnectMessage) =>
-            MirrorNetworkUtils.SendMessageToAll(disconnectMessage);
+            SendMessageToAllClient(disconnectMessage);
 
         private void OnReceiveConnectMessageOnClient(ConnectMessage connectMessage)
         {

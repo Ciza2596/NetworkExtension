@@ -50,14 +50,17 @@ namespace CizaMirrorNetworkExtension.Implement
         public void SetMaxPlayerCount(int maxPlayerCount) =>
             maxConnections = maxPlayerCount;
 
-        public void RegisterHandlerOnServer<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+        public void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
+            NetworkClient.Send(message);
+
+        public void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
+            MirrorNetworkUtils.SendMessageToAllClient(message);
+
+        public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             NetworkServer.RegisterHandler(handler, requireAuthentication);
 
-        public void RegisterHandlerOnClient<T>(Action<T> handler, bool requireAuthentication = true) where T : struct, NetworkMessage =>
+        public void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             NetworkClient.RegisterHandler(handler, requireAuthentication);
-
-        public void SendMessage<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
-            NetworkClient.Send(message);
 
         public override void OnStartServer()
         {
