@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -18,19 +17,6 @@ namespace CizaMirrorNetworkExtension.Implement
 
         public int PlayerCount => numPlayers;
         public NetworkManagerMode Mode => mode;
-
-        public bool TryGetPlayer(int playerId, out NetworkIdentity networkIdentity)
-        {
-            if (Mode.CheckIsOffline() || Mode.CheckIsClientOnly())
-            {
-                networkIdentity = null;
-                return false;
-            }
-
-            var networkConnectionToClient = NetworkServer.connections.First(connection => connection.Value.identity != null && connection.Value.identity.netId == playerId).Value;
-            networkIdentity = networkConnectionToClient.identity;
-            return networkIdentity != null;
-        }
 
         public void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad) =>
             dontDestroyOnLoad = isDontDestroyOnLoad;
@@ -59,8 +45,14 @@ namespace CizaMirrorNetworkExtension.Implement
         public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             NetworkServer.RegisterHandler(handler, requireAuthentication);
 
+        public void UnregisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler) where TMessage : struct, NetworkMessage =>
+            NetworkServer.UnregisterHandler<TMessage>();
+
         public void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             NetworkClient.RegisterHandler(handler, requireAuthentication);
+
+        public void UnregisterHandlerOnClient<TMessage>(Action<TMessage> handler) where TMessage : struct, NetworkMessage =>
+            NetworkClient.UnregisterHandler<TMessage>();
 
         public override void OnStartServer()
         {

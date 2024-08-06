@@ -14,11 +14,14 @@ namespace CizaMirrorNetworkExtension.Implement
         [Space]
         [SerializeField]
         private GameObject _networkManagerPrefab;
-        
+
         [SerializeField]
         private GameObject _networkPlayerPrefab;
 
         [Space]
+        [SerializeField]
+        private string _defaultUserName = "Player";
+
         [SerializeField]
         private int _defaultFps = 60;
 
@@ -34,6 +37,7 @@ namespace CizaMirrorNetworkExtension.Implement
         public GameObject NetworkManagerPrefab => _networkManagerPrefab;
         public GameObject NetworkPlayerPrefab => _networkPlayerPrefab;
 
+        public string DefaultUserName => _defaultUserName;
         public int DefaultFps => _defaultFps;
         public string DefaultNetworkAddress => _defaultNetworkAddress;
         public int DefaultMaxPlayerCount => _defaultMaxPlayerCount;

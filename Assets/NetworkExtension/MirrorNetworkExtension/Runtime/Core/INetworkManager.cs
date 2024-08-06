@@ -20,8 +20,6 @@ namespace CizaMirrorNetworkExtension
 
         NetworkManagerMode Mode { get; }
 
-        bool TryGetPlayer(int playerId, out NetworkIdentity networkIdentity);
-
         void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad);
         void SetPlayerPrefab(GameObject playerPrefab);
 
@@ -45,6 +43,9 @@ namespace CizaMirrorNetworkExtension
         void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
 
         void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage;
+        void UnregisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler) where TMessage : struct, NetworkMessage;
+
         void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage;
+        void UnregisterHandlerOnClient<TMessage>(Action<TMessage> handler) where TMessage : struct, NetworkMessage;
     }
 }

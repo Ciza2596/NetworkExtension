@@ -7,6 +7,7 @@ namespace CizaMirrorNetworkExtension
 {
     public class MirrorNetworkHandler
     {
+        public static readonly uint DisconnectPlayerId = UInt32.MaxValue;
         public readonly float DelayStopHostTime = 0.05f;
 
         private readonly IMirrorNetworkHandlerConfig _mirrorNetworkHandlerConfig;
@@ -36,6 +37,17 @@ namespace CizaMirrorNetworkExtension
 
         public bool IsInitialized => _networkManager != null;
 
+        public uint PlayerId
+        {
+            get
+            {
+                if (Mode.CheckIsOffline() || NetworkClient.connection == null || NetworkClient.connection.identity == null)
+                    return DisconnectPlayerId;
+
+                return NetworkClient.connection.identity.netId;
+            }
+        }
+
         public int Fps { get; private set; }
 
         public string NetworkAddress { get; private set; }
@@ -44,20 +56,11 @@ namespace CizaMirrorNetworkExtension
 
         public int PlayerCount => IsInitialized && !Mode.CheckIsOffline() ? _playerCount : 0;
 
+        public string UserName { get; private set; }
+
         public NetworkManagerMode Mode => IsInitialized ? _networkManager.Mode : NetworkManagerMode.Offline;
 
         public bool IsStoppingClient { get; private set; }
-
-        public bool TryGetPlayer(int playerId, out NetworkIdentity networkIdentity)
-        {
-            if (!IsInitialized)
-            {
-                networkIdentity = null;
-                return false;
-            }
-
-            return _networkManager.TryGetPlayer(playerId, out networkIdentity);
-        }
 
 
         public MirrorNetworkHandler(IMirrorNetworkHandlerConfig mirrorNetworkHandlerConfig) =>
@@ -68,7 +71,6 @@ namespace CizaMirrorNetworkExtension
         {
             if (IsInitialized)
                 return;
-
             var rootGameObject = new GameObject(_mirrorNetworkHandlerConfig.RootName);
             if (_mirrorNetworkHandlerConfig.IsDontDestroyOnLoad)
                 Object.DontDestroyOnLoad(rootGameObject);
@@ -78,6 +80,7 @@ namespace CizaMirrorNetworkExtension
             _networkManager.SetIsDontDestroyOnLoad(_mirrorNetworkHandlerConfig.IsDontDestroyOnLoad);
             _networkManager.SetPlayerPrefab(_mirrorNetworkHandlerConfig.NetworkPlayerPrefab);
             _networkManager.StopHost();
+            SetUserName(_mirrorNetworkHandlerConfig.DefaultUserName);
             SetFps(_mirrorNetworkHandlerConfig.DefaultFps);
             SetNetworkAddress(_mirrorNetworkHandlerConfig.DefaultNetworkAddress);
             SetMaxPlayerCount(_mirrorNetworkHandlerConfig.DefaultMaxPlayerCount);
@@ -110,6 +113,14 @@ namespace CizaMirrorNetworkExtension
                 return;
 
             CheckStoppingClient(deltaTime);
+        }
+
+        public void SetUserName(string userName)
+        {
+            if (Mode.CheckIsHost() || Mode.CheckIsClientOnly())
+                return;
+
+            UserName = userName;
         }
 
         public void SetFps(int fps)
@@ -203,9 +214,15 @@ namespace CizaMirrorNetworkExtension
 
         public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnServer(handler, requireAuthentication);
+        
+        public void UnregisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler) where TMessage : struct, NetworkMessage =>
+            _networkManager.UnregisterHandlerOnServer(handler);
 
         public void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnClient(handler, requireAuthentication);
+        
+        public void UnregisterHandlerOnClient<TMessage>(Action<TMessage> handler) where TMessage : struct, NetworkMessage =>
+            _networkManager.UnregisterHandlerOnClient(handler);
 
 
         private void OnStartServerImp()
