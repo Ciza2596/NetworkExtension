@@ -1,4 +1,5 @@
 using CizaMirrorNetworkExtension.Implement;
+using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,6 +47,13 @@ namespace CizaMirrorNetworkExtension.Example
 
             MirrorNetworkHandler.OnConnect += OnConnected;
             MirrorNetworkHandler.OnDisconnect += OnDisconnected;
+            
+            
+            // MirrorNetworkHandler.StartHost();
+            // MirrorNetworkHandler.RegisterHandlerOnServer<SendDebug>(OnSendDebug);
+            // MirrorNetworkHandler.SendMessageToServer<SendDebug>(new SendDebug());
+            // MirrorNetworkHandler.UnregisterHandlerOnServer<SendDebug>();
+            // MirrorNetworkHandler.SendMessageToServer<SendDebug>(new SendDebug());
 
             OnDisconnected(0);
         }
@@ -98,6 +106,17 @@ namespace CizaMirrorNetworkExtension.Example
         {
             _start.SetActive(true);
             _stop.SetActive(false);
+        }
+        
+        
+        private struct SendDebug: NetworkMessage
+        {
+        }
+
+        private void OnSendDebug(NetworkConnectionToClient networkConnectionToServer, SendDebug sendDebug)
+        {
+            Debug.Log("Hello");
+            
         }
     }
 }
