@@ -215,14 +215,14 @@ namespace CizaMirrorNetworkExtension
         public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnServer(handler, requireAuthentication);
         
-        public void UnregisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler) where TMessage : struct, NetworkMessage =>
-            _networkManager.UnregisterHandlerOnServer(handler);
+        public void UnregisterHandlerOnServer<TMessage>() where TMessage : struct, NetworkMessage =>
+            _networkManager.UnregisterHandlerOnServer<TMessage>();
 
         public void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnClient(handler, requireAuthentication);
         
-        public void UnregisterHandlerOnClient<TMessage>(Action<TMessage> handler) where TMessage : struct, NetworkMessage =>
-            _networkManager.UnregisterHandlerOnClient(handler);
+        public void UnregisterHandlerOnClient<TMessage>() where TMessage : struct, NetworkMessage =>
+            _networkManager.UnregisterHandlerOnClient<TMessage>();
 
 
         private void OnStartServerImp()
