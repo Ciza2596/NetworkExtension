@@ -77,7 +77,6 @@ namespace CizaMirrorNetworkExtension
             _root = rootGameObject.transform;
             _networkManager = Object.Instantiate(_mirrorNetworkHandlerConfig.NetworkManagerPrefab, _root).GetComponent<INetworkManager>();
 
-            _networkManager.SetIsDontDestroyOnLoad(_mirrorNetworkHandlerConfig.IsDontDestroyOnLoad);
             _networkManager.SetPlayerPrefab(_mirrorNetworkHandlerConfig.NetworkPlayerPrefab);
             _networkManager.StopHost();
             SetUserName(_mirrorNetworkHandlerConfig.DefaultUserName);
@@ -209,18 +208,21 @@ namespace CizaMirrorNetworkExtension
         public void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
             _networkManager.SendMessageToServer(message);
 
+        public void SendMessageToClient<TMessage>(uint playerId, TMessage message) where TMessage : struct, NetworkMessage =>
+            _networkManager.SendMessageToClient(playerId, message);
+
         public void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
             _networkManager.SendMessageToAllClient(message);
 
         public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnServer(handler, requireAuthentication);
-        
+
         public void UnregisterHandlerOnServer<TMessage>() where TMessage : struct, NetworkMessage =>
             _networkManager.UnregisterHandlerOnServer<TMessage>();
 
         public void RegisterHandlerOnClient<TMessage>(Action<TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnClient(handler, requireAuthentication);
-        
+
         public void UnregisterHandlerOnClient<TMessage>() where TMessage : struct, NetworkMessage =>
             _networkManager.UnregisterHandlerOnClient<TMessage>();
 

@@ -19,8 +19,7 @@ namespace CizaMirrorNetworkExtension
         int PlayerCount { get; }
 
         NetworkManagerMode Mode { get; }
-
-        void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad);
+        
         void SetPlayerPrefab(GameObject playerPrefab);
 
         void SetFps(int fps);
@@ -40,6 +39,8 @@ namespace CizaMirrorNetworkExtension
         void StopHost();
 
         void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
+
+        void SendMessageToClient<TMessage>(uint playerId, TMessage message) where TMessage : struct, NetworkMessage;
         void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
 
         void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage;

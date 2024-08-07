@@ -18,9 +18,6 @@ namespace CizaMirrorNetworkExtension.Implement
         public int PlayerCount => numPlayers;
         public NetworkManagerMode Mode => mode;
 
-        public void SetIsDontDestroyOnLoad(bool isDontDestroyOnLoad) =>
-            dontDestroyOnLoad = isDontDestroyOnLoad;
-
         public void SetPlayerPrefab(GameObject playerPrefab) =>
             this.playerPrefab = playerPrefab;
 
@@ -38,6 +35,9 @@ namespace CizaMirrorNetworkExtension.Implement
 
         public void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
             NetworkClient.Send(message);
+
+        public void SendMessageToClient<TMessage>(uint playerId, TMessage message) where TMessage : struct, NetworkMessage =>
+            MirrorNetworkUtils.SendMessageToClient(playerId, message);
 
         public void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
             MirrorNetworkUtils.SendMessageToAllClient(message);
