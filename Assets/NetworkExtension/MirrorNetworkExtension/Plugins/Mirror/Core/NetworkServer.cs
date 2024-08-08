@@ -10,8 +10,10 @@ namespace Mirror
     {
         /// <summary>Player Object remains active on server and clients. Only ownership is removed</summary>
         KeepActive,
+
         /// <summary>Player Object is unspawned on clients but remains on server</summary>
         Unspawn,
+
         /// <summary>Player Object is destroyed on server and clients</summary>
         Destroy
     }
@@ -106,7 +108,7 @@ namespace Mirror
         // very useful for profiling etc.
         // measured over 1s each, same as frame rate. no EMA here.
         public static int actualTickRate;
-        static double actualTickRateStart;   // start time when counting
+        static double actualTickRateStart; // start time when counting
         static int actualTickRateCounter; // current counter since start
 
         // profiling
@@ -235,7 +237,7 @@ namespace Mirror
 
             connections.Clear();
             connectionsCopy.Clear();
-            handlers.Clear();
+            //handlers.Clear();
 
             // destroy all spawned objects, _then_ set inactive.
             // make sure .active is still true before calling this.
@@ -289,12 +291,12 @@ namespace Mirror
 
         internal static void RegisterMessageHandlers()
         {
-            RegisterHandler<ReadyMessage>(OnClientReadyMessage);
-            RegisterHandler<CommandMessage>(OnCommandMessage);
-            RegisterHandler<NetworkPingMessage>(NetworkTime.OnServerPing, false);
-            RegisterHandler<NetworkPongMessage>(NetworkTime.OnServerPong, false);
-            RegisterHandler<EntityStateMessage>(OnEntityStateMessage, true);
-            RegisterHandler<TimeSnapshotMessage>(OnTimeSnapshotMessage, true);
+            RegisterHandler<ReadyMessage>(OnClientReadyMessage, true, false);
+            RegisterHandler<CommandMessage>(OnCommandMessage, true, false);
+            RegisterHandler<NetworkPingMessage>(NetworkTime.OnServerPing, false, false);
+            RegisterHandler<NetworkPongMessage>(NetworkTime.OnServerPong, false, false);
+            RegisterHandler<EntityStateMessage>(OnEntityStateMessage, true, false);
+            RegisterHandler<TimeSnapshotMessage>(OnTimeSnapshotMessage, true, false);
         }
 
         // remote calls ////////////////////////////////////////////////////////
@@ -327,6 +329,7 @@ namespace Mirror
 
                     Debug.LogWarning("Command received while client is not ready.\nThis may be ignored if client intentionally set NotReady.");
                 }
+
                 return;
             }
 
@@ -438,6 +441,7 @@ namespace Mirror
                 connections[conn.connectionId] = conn;
                 return true;
             }
+
             // already a connection with this id
             return false;
         }
@@ -467,6 +471,7 @@ namespace Mirror
                 localConnection.Disconnect();
                 localConnection = null;
             }
+
             RemoveConnection(0);
         }
 
@@ -483,6 +488,7 @@ namespace Mirror
                 // otherwise we have real external connections
                 return true;
             }
+
             return false;
         }
 
@@ -896,11 +902,11 @@ namespace Mirror
         /// <summary>Register a handler for message type T. Most should require authentication.</summary>
         // TODO obsolete this some day to always use the channelId version.
         //      all handlers in this version are wrapped with 1 extra action.
-        public static void RegisterHandler<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true)
+        public static void RegisterHandler<T>(Action<NetworkConnectionToClient, T> handler, bool requireAuthentication = true, bool isShowDebug = true)
             where T : struct, NetworkMessage
         {
             ushort msgType = NetworkMessageId<T>.Id;
-            if (handlers.ContainsKey(msgType))
+            if (isShowDebug && handlers.ContainsKey(msgType))
             {
                 Debug.LogWarning($"NetworkServer.RegisterHandler replacing handler for {typeof(T).FullName}, id={msgType}. If replacement is intentional, use ReplaceHandler instead to avoid this warning.");
             }
@@ -913,11 +919,11 @@ namespace Mirror
 
         /// <summary>Register a handler for message type T. Most should require authentication.</summary>
         // This version passes channelId to the handler.
-        public static void RegisterHandler<T>(Action<NetworkConnectionToClient, T, int> handler, bool requireAuthentication = true)
+        public static void RegisterHandler<T>(Action<NetworkConnectionToClient, T, int> handler, bool requireAuthentication = true, bool isShowDebug = true)
             where T : struct, NetworkMessage
         {
             ushort msgType = NetworkMessageId<T>.Id;
-            if (handlers.ContainsKey(msgType))
+            if (isShowDebug && handlers.ContainsKey(msgType))
             {
                 Debug.LogWarning($"NetworkServer.RegisterHandler replacing handler for {typeof(T).FullName}, id={msgType}. If replacement is intentional, use ReplaceHandler instead to avoid this warning.");
             }
@@ -977,6 +983,7 @@ namespace Mirror
                 Debug.LogError($"GameObject {go.name} doesn't have NetworkIdentity.");
                 return false;
             }
+
             return true;
         }
 
@@ -1037,6 +1044,7 @@ namespace Mirror
             {
                 identity.assetId = assetId;
             }
+
             return AddPlayerForConnection(conn, player);
         }
 
@@ -1154,6 +1162,7 @@ namespace Mirror
             {
                 identity.assetId = assetId;
             }
+
             return ReplacePlayerForConnection(conn, player, keepAuthority);
         }
 
@@ -1503,6 +1512,7 @@ namespace Mirror
             {
                 identity.assetId = assetId;
             }
+
             SpawnObject(obj, ownerConnection);
         }
 
@@ -1872,6 +1882,7 @@ namespace Mirror
                 connection.Disconnect();
                 return true;
             }
+
             return false;
         }
 

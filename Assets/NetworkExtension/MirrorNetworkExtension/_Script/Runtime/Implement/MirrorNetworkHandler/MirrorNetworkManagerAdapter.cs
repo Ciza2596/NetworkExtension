@@ -12,7 +12,7 @@ namespace CizaMirrorNetworkExtension.Implement
         public event Action OnStartClientEvent;
         public event Action OnStopClientEvent;
 
-        public event Action OnServerAddPlayerEvent;
+        public event Action<string> OnServerAddPlayerEvent;
 
 
         public int PlayerCount => numPlayers;
@@ -36,10 +36,10 @@ namespace CizaMirrorNetworkExtension.Implement
         public void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
             NetworkClient.Send(message);
 
-        public void SendMessageToClient<TMessage>(uint playerId, TMessage message) where TMessage : struct, NetworkMessage =>
+        public void SendMessageToClient<TMessage>(string playerId, TMessage message) where TMessage : struct, NetworkMessage =>
             MirrorNetworkUtils.SendMessageToClient(playerId, message);
 
-        public void SendMessageToAllClient<TMessage>(TMessage message, uint[] exceptPlayerIdList) where TMessage : struct, NetworkMessage =>
+        public void SendMessageToAllClient<TMessage>(TMessage message, string[] exceptPlayerIdList) where TMessage : struct, NetworkMessage =>
             MirrorNetworkUtils.SendMessageToAllClient(message, exceptPlayerIdList);
 
         public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
@@ -82,7 +82,7 @@ namespace CizaMirrorNetworkExtension.Implement
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
             base.OnServerAddPlayer(conn);
-            OnServerAddPlayerEvent?.Invoke();
+            OnServerAddPlayerEvent?.Invoke(conn.identity.netId.ToString());
         }
     }
 }

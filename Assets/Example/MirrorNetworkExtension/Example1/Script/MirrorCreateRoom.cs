@@ -47,15 +47,15 @@ namespace CizaMirrorNetworkExtension.Example
 
             MirrorNetworkHandler.OnConnect += OnConnected;
             MirrorNetworkHandler.OnDisconnect += OnDisconnected;
-            
-            
+
+
             // MirrorNetworkHandler.StartHost();
             // MirrorNetworkHandler.RegisterHandlerOnServer<SendDebug>(OnSendDebug);
             // MirrorNetworkHandler.SendMessageToServer<SendDebug>(new SendDebug());
             // MirrorNetworkHandler.UnregisterHandlerOnServer<SendDebug>();
             // MirrorNetworkHandler.SendMessageToServer<SendDebug>(new SendDebug());
 
-            OnDisconnected(0);
+            OnDisconnected(string.Empty);
         }
 
         public void OnDisable()
@@ -96,27 +96,24 @@ namespace CizaMirrorNetworkExtension.Example
             MirrorNetworkHandler.StopHost();
         }
 
-        private void OnConnected(uint playerId)
+        private void OnConnected(string playerId)
         {
             _start.SetActive(false);
             _stop.SetActive(true);
         }
 
-        private void OnDisconnected(uint playerId)
+        private void OnDisconnected(string playerId)
         {
             _start.SetActive(true);
             _stop.SetActive(false);
         }
-        
-        
-        private struct SendDebug: NetworkMessage
-        {
-        }
+
+
+        private struct SendDebug : NetworkMessage { }
 
         private void OnSendDebug(NetworkConnectionToClient networkConnectionToServer, SendDebug sendDebug)
         {
             Debug.Log("Hello");
-            
         }
     }
 }

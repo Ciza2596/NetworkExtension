@@ -7,9 +7,26 @@ using UnityEngine.Serialization;
 
 namespace Mirror
 {
-    public enum PlayerSpawnMethod { Random, RoundRobin }
-    public enum NetworkManagerMode { Offline, ServerOnly, ClientOnly, Host }
-    public enum HeadlessStartOptions { DoNothing, AutoStartServer, AutoStartClient }
+    public enum PlayerSpawnMethod
+    {
+        Random,
+        RoundRobin
+    }
+
+    public enum NetworkManagerMode
+    {
+        Offline,
+        ServerOnly,
+        ClientOnly,
+        Host
+    }
+
+    public enum HeadlessStartOptions
+    {
+        DoNothing,
+        AutoStartServer,
+        AutoStartClient
+    }
 
     [DisallowMultipleComponent]
     [AddComponentMenu("Network/Network Manager")]
@@ -30,7 +47,6 @@ namespace Mirror
 
         /// <summary>Should the server auto-start when 'Server Build' is checked in build settings</summary>
         [Header("Auto-Start Options")]
-
         [Tooltip("Choose whether Server or Client should auto-start in headless builds")]
         public HeadlessStartOptions headlessStartMode = HeadlessStartOptions.DoNothing;
 
@@ -128,6 +144,7 @@ namespace Mirror
 
         /// <summary>List of transforms populated by NetworkStartPositions</summary>
         public static List<Transform> startPositions = new List<Transform>();
+
         public static int startPositionIndex;
 
         [Header("Security")]
@@ -414,7 +431,6 @@ namespace Mirror
                 authenticator.OnStartClient();
                 authenticator.OnClientAuthenticated.AddListener(OnClientAuthenticated);
             }
-
         }
 
         /// <summary>Starts the client, connects it to the server with networkAddress.</summary>
@@ -732,6 +748,7 @@ namespace Mirror
                     // Return false to not allow collision-destroyed second instance to continue.
                     return false;
                 }
+
                 //Debug.Log("NetworkManager created singleton (DontDestroyOnLoad)");
                 singleton = this;
                 if (Application.isPlaying)
@@ -774,7 +791,7 @@ namespace Mirror
             NetworkServer.OnDisconnectedEvent = OnServerDisconnect;
             NetworkServer.OnErrorEvent = OnServerError;
             NetworkServer.OnTransportExceptionEvent = OnServerTransportException;
-            NetworkServer.RegisterHandler<AddPlayerMessage>(OnServerAddPlayerInternal);
+            NetworkServer.RegisterHandler<AddPlayerMessage>(OnServerAddPlayerInternal, true, false);
 
             // Network Server initially registers its own handler for this, so we replace it here.
             NetworkServer.ReplaceHandler<ReadyMessage>(OnServerReadyMessageInternal);
@@ -788,8 +805,8 @@ namespace Mirror
             NetworkClient.OnTransportExceptionEvent = OnClientTransportException;
 
             // Don't require authentication because server may send NotReadyMessage from ServerChangeScene
-            NetworkClient.RegisterHandler<NotReadyMessage>(OnClientNotReadyMessageInternal, false);
-            NetworkClient.RegisterHandler<SceneMessage>(OnClientSceneInternal, false);
+            NetworkClient.RegisterHandler<NotReadyMessage>(OnClientNotReadyMessageInternal, false, false);
+            NetworkClient.RegisterHandler<SceneMessage>(OnClientSceneInternal, false, false);
 
             if (playerPrefab != null)
                 NetworkClient.RegisterPrefab(playerPrefab);
@@ -945,6 +962,7 @@ namespace Mirror
                         // Reset the flag that we disabled before entering this switch
                         NetworkClient.isLoadingScene = false;
                     }
+
                     break;
                 case SceneOperation.UnloadAdditive:
                     // Ensure additive scene is actually loaded on client by name or path
@@ -958,6 +976,7 @@ namespace Mirror
                         // Reset the flag that we disabled before entering this switch
                         NetworkClient.isLoadingScene = false;
                     }
+
                     break;
             }
 
@@ -985,6 +1004,7 @@ namespace Mirror
                     NetworkServer.SpawnObjects();
                     // Debug.Log($"Respawned Server objects after additive scene load: {scene.name}");
                 }
+
                 if (NetworkClient.active)
                 {
                     NetworkClient.PrepareToSpawnSceneObjects();
@@ -1381,6 +1401,7 @@ namespace Mirror
                 // this is now allowed (was not for a while)
                 //Debug.Log("Ready with no player object");
             }
+
             NetworkServer.SetClientReady(conn);
         }
 

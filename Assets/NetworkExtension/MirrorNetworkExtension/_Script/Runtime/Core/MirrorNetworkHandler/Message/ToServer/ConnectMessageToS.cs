@@ -3,18 +3,17 @@ using UnityEngine.Scripting;
 
 namespace CizaMirrorNetworkExtension
 {
-    public struct DisconnectMessage : NetworkMessage
+    public struct ConnectMessageToS : NetworkMessage
     {
-        public readonly uint PlayerId;
+        public readonly string PlayerId;
+
         public readonly int PlayerCount;
-        public readonly bool IsHost;
 
         [Preserve]
-        public DisconnectMessage(uint playerId, int playerCount, bool isHost)
+        public ConnectMessageToS(string playerId, int playerCount)
         {
             PlayerId = playerId;
             PlayerCount = playerCount;
-            IsHost = isHost;
         }
     }
 }

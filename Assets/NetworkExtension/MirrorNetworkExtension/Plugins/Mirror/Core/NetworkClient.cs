@@ -9,9 +9,11 @@ namespace Mirror
     public enum ConnectState
     {
         None,
+
         // connecting between Connect() and OnTransportConnected()
         Connecting,
         Connected,
+
         // disconnecting between Disconnect() and OnTransportDisconnected()
         Disconnecting,
         Disconnected
@@ -102,6 +104,7 @@ namespace Mirror
         // https://mirror-networking.gitbook.io/docs/guides/gameobjects/custom-spawnfunctions
         internal static readonly Dictionary<uint, SpawnHandlerDelegate> spawnHandlers =
             new Dictionary<uint, SpawnHandlerDelegate>();
+
         internal static readonly Dictionary<uint, UnSpawnDelegate> unspawnHandlers =
             new Dictionary<uint, UnSpawnDelegate>();
 
@@ -386,6 +389,7 @@ namespace Mirror
                             }
                             else
                                 Debug.LogWarning("NetworkClient: received Message was too short (messages should start with message id)");
+
                             return;
                         }
                     }
@@ -495,41 +499,41 @@ namespace Mirror
             // 'message id not found' errors.
             if (hostMode)
             {
-                RegisterHandler<ObjectDestroyMessage>(OnHostClientObjectDestroy);
-                RegisterHandler<ObjectHideMessage>(OnHostClientObjectHide);
-                RegisterHandler<NetworkPongMessage>(_ => { }, false);
-                RegisterHandler<SpawnMessage>(OnHostClientSpawn);
+                RegisterHandler<ObjectDestroyMessage>(OnHostClientObjectDestroy, true, false);
+                RegisterHandler<ObjectHideMessage>(OnHostClientObjectHide, true, false);
+                RegisterHandler<NetworkPongMessage>(_ => { }, false, false);
+                RegisterHandler<SpawnMessage>(OnHostClientSpawn, true, false);
                 // host mode doesn't need spawning
-                RegisterHandler<ObjectSpawnStartedMessage>(_ => { });
+                RegisterHandler<ObjectSpawnStartedMessage>(_ => { }, true, false);
                 // host mode doesn't need spawning
-                RegisterHandler<ObjectSpawnFinishedMessage>(_ => { });
+                RegisterHandler<ObjectSpawnFinishedMessage>(_ => { }, true, false);
                 // host mode doesn't need state updates
-                RegisterHandler<EntityStateMessage>(_ => { });
+                RegisterHandler<EntityStateMessage>(_ => { }, true, false);
             }
             else
             {
-                RegisterHandler<ObjectDestroyMessage>(OnObjectDestroy);
-                RegisterHandler<ObjectHideMessage>(OnObjectHide);
-                RegisterHandler<NetworkPongMessage>(NetworkTime.OnClientPong, false);
-                RegisterHandler<NetworkPingMessage>(NetworkTime.OnClientPing, false);
+                RegisterHandler<ObjectDestroyMessage>(OnObjectDestroy, true, false);
+                RegisterHandler<ObjectHideMessage>(OnObjectHide, true, false);
+                RegisterHandler<NetworkPongMessage>(NetworkTime.OnClientPong, false, false);
+                RegisterHandler<NetworkPingMessage>(NetworkTime.OnClientPing, false, false);
                 RegisterHandler<SpawnMessage>(OnSpawn);
-                RegisterHandler<ObjectSpawnStartedMessage>(OnObjectSpawnStarted);
-                RegisterHandler<ObjectSpawnFinishedMessage>(OnObjectSpawnFinished);
-                RegisterHandler<EntityStateMessage>(OnEntityStateMessage);
+                RegisterHandler<ObjectSpawnStartedMessage>(OnObjectSpawnStarted, true, false);
+                RegisterHandler<ObjectSpawnFinishedMessage>(OnObjectSpawnFinished, true, false);
+                RegisterHandler<EntityStateMessage>(OnEntityStateMessage, true, false);
             }
 
             // These handlers are the same for host and remote clients
-            RegisterHandler<TimeSnapshotMessage>(OnTimeSnapshotMessage);
-            RegisterHandler<ChangeOwnerMessage>(OnChangeOwner);
-            RegisterHandler<RpcMessage>(OnRPCMessage);
+            RegisterHandler<TimeSnapshotMessage>(OnTimeSnapshotMessage, true, false);
+            RegisterHandler<ChangeOwnerMessage>(OnChangeOwner, true, false);
+            RegisterHandler<RpcMessage>(OnRPCMessage, true, false);
         }
 
         /// <summary>Register a handler for a message type T. Most should require authentication.</summary>
-        public static void RegisterHandler<T>(Action<T> handler, bool requireAuthentication = true)
+        public static void RegisterHandler<T>(Action<T> handler, bool requireAuthentication = true, bool isShowDebug = true)
             where T : struct, NetworkMessage
         {
             ushort msgType = NetworkMessageId<T>.Id;
-            if (handlers.ContainsKey(msgType))
+            if (isShowDebug && handlers.ContainsKey(msgType))
             {
                 Debug.LogWarning($"NetworkClient.RegisterHandler replacing handler for {typeof(T).FullName}, id={msgType}. If replacement is intentional, use ReplaceHandler instead to avoid this warning.");
             }
@@ -546,11 +550,11 @@ namespace Mirror
 
         /// <summary>Register a handler for a message type T. Most should require authentication.</summary>
         // This version passes channelId to the handler.
-        public static void RegisterHandler<T>(Action<T, int> handler, bool requireAuthentication = true)
+        public static void RegisterHandler<T>(Action<T, int> handler, bool requireAuthentication = true, bool isShowDebug = true)
             where T : struct, NetworkMessage
         {
             ushort msgType = NetworkMessageId<T>.Id;
-            if (handlers.ContainsKey(msgType))
+            if (isShowDebug && handlers.ContainsKey(msgType))
             {
                 Debug.LogWarning($"NetworkClient.RegisterHandler replacing handler for {typeof(T).FullName}, id={msgType}. If replacement is intentional, use ReplaceHandler instead to avoid this warning.");
             }
@@ -1032,6 +1036,7 @@ namespace Mirror
                 handler(obj);
                 return true;
             }
+
             return false;
         }
 
@@ -1264,6 +1269,7 @@ namespace Mirror
                 //foreach (KeyValuePair<ulong, NetworkIdentity> kvp in spawnableObjects)
                 //    Debug.Log($"Spawnable: SceneId={kvp.Key:X} name={kvp.Value.name}");
             }
+
             //else Debug.Log($"Client spawn for [netId:{msg.netId}] [sceneId:{msg.sceneId:X}] obj:{identity}");
             return identity;
         }
@@ -1275,6 +1281,7 @@ namespace Mirror
                 spawnableObjects.Remove(sceneId);
                 return identity;
             }
+
             return null;
         }
 
@@ -1299,8 +1306,8 @@ namespace Mirror
                     if (spawnableObjects.TryGetValue(identity.sceneId, out NetworkIdentity existingIdentity))
                     {
                         string msg = $"NetworkClient: Duplicate sceneId {identity.sceneId} detected on {identity.gameObject.name} and {existingIdentity.gameObject.name}\n" +
-                            $"This can happen if a networked object is persisted in DontDestroyOnLoad through loading / changing to the scene where it originated,\n" +
-                            $"otherwise you may need to open and re-save the {identity.gameObject.scene} to reset scene id's.";
+                                     $"This can happen if a networked object is persisted in DontDestroyOnLoad through loading / changing to the scene where it originated,\n" +
+                                     $"otherwise you may need to open and re-save the {identity.gameObject.scene} to reset scene id's.";
                         Debug.LogWarning(msg, identity.gameObject);
                     }
                     else
@@ -1333,6 +1340,7 @@ namespace Mirror
                 }
                 else Debug.LogWarning("Found null entry in NetworkClient.spawned. This is unexpected. Was the NetworkIdentity not destroyed properly?");
             }
+
             isSpawnFinished = true;
         }
 
@@ -1718,6 +1726,7 @@ namespace Mirror
                         }
                     }
                 }
+
                 spawned.Clear();
                 connection?.owned.Clear();
             }
@@ -1785,7 +1794,7 @@ namespace Mirror
 
             spawned.Clear();
             connection?.owned.Clear();
-            handlers.Clear();
+            //handlers.Clear();
             spawnableObjects.Clear();
 
             // IMPORTANT: do NOT call NetworkIdentity.ResetStatics() here!
@@ -1836,7 +1845,7 @@ namespace Mirror
             GUILayout.Label("Snapshot Interp.:");
             // color while catching up / slowing down
             if (localTimescale > 1) GUI.color = Color.green; // green traffic light = go fast
-            else if (localTimescale < 1) GUI.color = Color.red;   // red traffic light = go slow
+            else if (localTimescale < 1) GUI.color = Color.red; // red traffic light = go slow
             else GUI.color = Color.white;
             GUILayout.Box($"timeline: {localTimeline:F2}");
             GUILayout.Box($"buffer: {snapshots.Count}");

@@ -14,7 +14,7 @@ namespace CizaMirrorNetworkExtension
 
         event Action OnStopClientEvent;
 
-        event Action OnServerAddPlayerEvent;
+        event Action<string> OnServerAddPlayerEvent;
 
         int PlayerCount { get; }
 
@@ -40,8 +40,8 @@ namespace CizaMirrorNetworkExtension
 
         void SendMessageToServer<TMessage>(TMessage message) where TMessage : struct, NetworkMessage;
 
-        void SendMessageToClient<TMessage>(uint playerId, TMessage message) where TMessage : struct, NetworkMessage;
-        void SendMessageToAllClient<TMessage>(TMessage message, uint[] exceptPlayerIdList) where TMessage : struct, NetworkMessage;
+        void SendMessageToClient<TMessage>(string playerId, TMessage message) where TMessage : struct, NetworkMessage;
+        void SendMessageToAllClient<TMessage>(TMessage message, string[] exceptPlayerIdList) where TMessage : struct, NetworkMessage;
 
 
         void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage;
