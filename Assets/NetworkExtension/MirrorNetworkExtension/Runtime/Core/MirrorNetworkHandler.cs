@@ -211,8 +211,8 @@ namespace CizaMirrorNetworkExtension
         public void SendMessageToClient<TMessage>(uint playerId, TMessage message) where TMessage : struct, NetworkMessage =>
             _networkManager.SendMessageToClient(playerId, message);
 
-        public void SendMessageToAllClient<TMessage>(TMessage message) where TMessage : struct, NetworkMessage =>
-            _networkManager.SendMessageToAllClient(message);
+        public void SendMessageToAllClient<TMessage>(TMessage message, uint[] exceptPlayerIdList = null) where TMessage : struct, NetworkMessage =>
+            _networkManager.SendMessageToAllClient(message, exceptPlayerIdList);
 
         public void RegisterHandlerOnServer<TMessage>(Action<NetworkConnectionToClient, TMessage> handler, bool requireAuthentication = true) where TMessage : struct, NetworkMessage =>
             _networkManager.RegisterHandlerOnServer(handler, requireAuthentication);
