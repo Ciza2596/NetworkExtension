@@ -56,7 +56,7 @@ namespace CizaMirrorNetworkExtension
 
         public int PlayerCount => IsInitialized && !Mode.CheckIsOffline() ? _playerCount : 0;
 
-        public string UserName { get; private set; }
+        public string PlayerName { get; private set; }
 
         public NetworkManagerMode Mode => IsInitialized ? _networkManager.Mode : NetworkManagerMode.Offline;
 
@@ -79,7 +79,7 @@ namespace CizaMirrorNetworkExtension
 
             _networkManager.SetPlayerPrefab(_mirrorNetworkHandlerConfig.NetworkPlayerPrefab);
             _networkManager.StopHost();
-            SetUserName(_mirrorNetworkHandlerConfig.DefaultUserName);
+            SetPlayerName(_mirrorNetworkHandlerConfig.DefaultPlayerName);
             SetFps(_mirrorNetworkHandlerConfig.DefaultFps);
             SetNetworkAddress(_mirrorNetworkHandlerConfig.DefaultNetworkAddress);
             SetMaxPlayerCount(_mirrorNetworkHandlerConfig.DefaultMaxPlayerCount);
@@ -114,12 +114,12 @@ namespace CizaMirrorNetworkExtension
             CheckStoppingClient(deltaTime);
         }
 
-        public void SetUserName(string userName)
+        public void SetPlayerName(string playerName)
         {
             if (Mode.CheckIsHost() || Mode.CheckIsClientOnly())
                 return;
 
-            UserName = userName;
+            PlayerName = playerName;
         }
 
         public void SetFps(int fps)

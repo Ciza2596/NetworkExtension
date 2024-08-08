@@ -10,7 +10,7 @@ namespace CizaMirrorNetworkExtension
         GameObject NetworkManagerPrefab { get; }
         GameObject NetworkPlayerPrefab { get; }
 
-        string DefaultUserName { get; }
+        string DefaultPlayerName { get; }
         int DefaultFps { get; }
         string DefaultNetworkAddress { get; }
         int DefaultMaxPlayerCount { get; }
